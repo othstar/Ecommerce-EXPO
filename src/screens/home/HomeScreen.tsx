@@ -30,6 +30,7 @@ const HomeScreen = () => {
         contentContainerStyle={{
           paddingHorizontal: s(10),
         }}
+        showsVerticalScrollIndicator={false}
         numColumns={2}
       />
     </AppSaveView>

@@ -1,5 +1,9 @@
-import { StyleSheet, Text, Image } from "react-native";
-import React, { useState } from "react";
+import React from "react";
+import { StyleSheet, Image } from "react-native";
+import { useForm, Controller } from "react-hook-form";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
 import AppSaveView from "../../components/views/AppSaveView";
 import { sharedPaddingHorizontal } from "../../styles/SharedStyles";
 import { IMAGES } from "../../constants/imagesPathes";
@@ -9,29 +13,84 @@ import AppText from "../../components/text/AppText";
 import AppButton from "../../components/buttons/AppButton";
 import { AppColors } from "../../styles/colors";
 import { useNavigation } from "@react-navigation/native";
+import { supabase } from "../../config/supabase";
+
+const schema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  password: Yup.string().required("Password is required"),
+});
 
 const SignInScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const navigation = useNavigation();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = async (data) => {
+    const { email, password } = data;
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert("Login failed: " + error.message);
+    } else {
+      navigation.navigate("BottomTabs");
+    }
+  };
+
   return (
     <AppSaveView style={styles.container}>
       <Image source={IMAGES.appLogo} style={styles.logo} />
-      <AppTextInput
-        placeholder="Email"
-        onChangeText={setEmail}
-        keyboardType="email-address"
+
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, value } }) => (
+          <>
+            <AppTextInput
+              placeholder="Email"
+              onChangeText={onChange}
+              value={value}
+              keyboardType="email-address"
+            />
+            {errors.email && (
+              <AppText style={{ color: "red" }}>{errors.email.message}</AppText>
+            )}
+          </>
+        )}
       />
-      <AppTextInput
-        placeholder="Password"
-        onChangeText={setPassword}
-        secureTextEntry
+
+      <Controller
+        control={control}
+        name="password"
+        render={({ field: { onChange, value } }) => (
+          <>
+            <AppTextInput
+              placeholder="Password"
+              onChangeText={onChange}
+              value={value}
+              secureTextEntry
+            />
+            {errors.password && (
+              <AppText style={{ color: "red" }}>
+                {errors.password.message}
+              </AppText>
+            )}
+          </>
+        )}
       />
+
       <AppText style={styles.appName}>Smart E-Commerce</AppText>
-      <AppButton
-        title={"Login"}
-        onPress={() => navigation.navigate("BottomTabs")}
-      />
+
+      <AppButton title={"Login"} onPress={handleSubmit(onSubmit)} />
+
       <AppButton
         title={"Sign Up"}
         style={styles.registerButton}
