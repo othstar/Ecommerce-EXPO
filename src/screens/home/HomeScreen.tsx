@@ -1,21 +1,37 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import React from "react";
 import AppSaveView from "../../components/views/AppSaveView";
 import HomeHeader from "../../components/headers/HomeHeader";
-import { s } from "react-native-size-matters";
-import { AppFonts } from "../../styles/fonts";
+
+import ProductCard from "../../components/Cards/ProductCard";
+import { FlatList } from "react-native-gesture-handler";
+import { products } from "../../data/products";
+import { s, vs } from "react-native-size-matters";
 
 const HomeScreen = () => {
   return (
     <AppSaveView>
       <HomeHeader />
-      <Text style={{ fontSize: s(50) }}>HomeScreen</Text>
-      <Text style={{ fontSize: s(50), fontFamily: AppFonts.Medium }}>
-        HomeScreen
-      </Text>
-      <Text style={{ fontSize: s(50), fontFamily: AppFonts.Bold }}>
-        HomeScreen
-      </Text>
+      <FlatList
+        data={products}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <ProductCard
+            imageURL={item.imageURL}
+            title={item.title}
+            price={item.price}
+            onAddToCartPress={() => {}}
+          />
+        )}
+        columnWrapperStyle={{
+          justifyContent: "space-between",
+          marginBottom: vs(10),
+        }}
+        contentContainerStyle={{
+          paddingHorizontal: s(10),
+        }}
+        numColumns={2}
+      />
     </AppSaveView>
   );
 };
