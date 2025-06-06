@@ -11,7 +11,7 @@ import { IS_ANDROID } from "../../constants/constants";
 
 interface AppSaveViewProps {
   children: React.ReactNode;
-  style: ViewStyle;
+  style?: ViewStyle;
 }
 
 const AppSaveView: FC<AppSaveViewProps> = ({ children, style }) => {
