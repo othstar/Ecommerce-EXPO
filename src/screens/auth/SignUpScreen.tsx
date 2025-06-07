@@ -33,7 +33,11 @@ const SignUpScreen = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: {
+    userName: any;
+    email: any;
+    password: any;
+  }) => {
     const { userName, email, password } = data;
     const { error } = await supabase.auth.signUp({
       email,
