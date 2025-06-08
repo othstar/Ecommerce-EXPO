@@ -2,37 +2,64 @@ import { StyleSheet, View } from "react-native";
 import React from "react";
 import HomeHeader from "../../components/headers/HomeHeader";
 import AppSaveView from "../../components/views/AppSaveView";
-
 import CartItem from "../../components/cart/CartItem";
 import TotalsView from "../../components/cart/TotalsView";
 import { FlatList } from "react-native-gesture-handler";
-import { products } from "../../data/products";
 import { sharedPaddingHorizontal } from "../../styles/SharedStyles";
 import AppButton from "../../components/buttons/AppButton";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import {
+  addItemToCart,
+  removeItemFromCart,
+  removeProductFromCart,
+} from "../../store/reducers/cartSlice";
+import { shippingFees, taxes } from "../../constants/constants";
+import EmptyCart from "./EmptyCart";
 
 const CartScreen = () => {
   const navigation = useNavigation();
+  const { items } = useSelector((state: RootState) => state.cartSlice);
+  const dispatch = useDispatch();
+  const totalProductsPricesSum = items.reduce((acc, item) => acc + item.sum, 0);
+  const orderTotal = totalProductsPricesSum + taxes + shippingFees;
+
   return (
     <AppSaveView>
       <HomeHeader />
-      {/* <EmptyCart /> */}
-      <View style={{ paddingHorizontal: sharedPaddingHorizontal, flex: 1 }}>
-        <FlatList
-          data={products}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => {
-            return <CartItem {...item} />;
-          }}
-          showsVerticalScrollIndicator={false}
-        />
 
-        <TotalsView itemsPrice={5000} orderTotal={5025} />
-        <AppButton
-          onPress={() => navigation.navigate("CheckoutScreen")}
-          title="Continue"
-        />
-      </View>
+      {items.length > 0 ? (
+        <View style={{ paddingHorizontal: sharedPaddingHorizontal, flex: 1 }}>
+          <FlatList
+            data={items}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => {
+              return (
+                <CartItem
+                  {...item}
+                  price={item.sum}
+                  onDecreasePress={() => dispatch(removeItemFromCart(item))}
+                  onDeletePress={() => dispatch(removeProductFromCart(item))}
+                  onIncreasePress={() => dispatch(addItemToCart(item))}
+                />
+              );
+            }}
+            showsVerticalScrollIndicator={false}
+          />
+
+          <TotalsView
+            itemsPrice={totalProductsPricesSum}
+            orderTotal={orderTotal}
+          />
+          <AppButton
+            onPress={() => navigation.navigate("CheckoutScreen")}
+            title="Continue"
+          />
+        </View>
+      ) : (
+        <EmptyCart />
+      )}
     </AppSaveView>
   );
 };
