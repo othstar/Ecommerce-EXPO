@@ -16,6 +16,8 @@ import { useNavigation } from "@react-navigation/native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { showMessage } from "react-native-flash-message";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../store/reducers/userSlice";
 
 const schema = yup
   .object({
@@ -35,6 +37,8 @@ type FormData = yup.InferType<typeof schema>;
 const SignInScreen = () => {
   const navigation = useNavigation();
 
+  const dispatch = useDispatch();
+
   const {
     control,
     handleSubmit,
@@ -51,7 +55,12 @@ const SignInScreen = () => {
         data.password
       );
       navigation.navigate("BottomTabs");
-      console.log(userCredential);
+      console.log(JSON.stringify(userCredential, null, 3));
+
+      const uerDataObj = {
+        uid: userCredential.user.uid,
+      };
+      dispatch(setUserData(uerDataObj));
     } catch (error: any) {
       let errorMessage = "";
 

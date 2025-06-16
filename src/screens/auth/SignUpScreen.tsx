@@ -15,6 +15,8 @@ import AppTextInputController from "../../components/inputs/AppTextInputControll
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { showMessage } from "react-native-flash-message";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../store/reducers/userSlice";
 
 const schema = yup
   .object({
@@ -37,6 +39,7 @@ type FormData = yup.InferType<typeof schema>;
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const {
     control,
@@ -56,7 +59,10 @@ const SignUpScreen = () => {
 
       Alert.alert("User Created!");
       navigation.navigate("SignInScreen");
-      return userCredential.user;
+      const uerDataObj = {
+        uid: userCredential.user.uid,
+      };
+      dispatch(setUserData(uerDataObj));
     } catch (error: any) {
       let errorMessage = "";
       if (error.code === "auth/email-already-in-use") {

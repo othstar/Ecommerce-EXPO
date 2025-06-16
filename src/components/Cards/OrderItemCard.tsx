@@ -26,14 +26,13 @@ const OrderItemCard: FC<OrderItemCardProps> = ({
       </View>
       <View style={styles.rowContent}>
         <View>
-          <AppText>Total Price: {totalPrice}</AppText>
+          <AppText>Total Price: {totalPrice} $</AppText>
           <AppText>Date: {date}</AppText>
         </View>
         <View style={{ alignItems: "flex-end" }}>
           <AppText style={{ color: AppColors.secondaryColor }}>
             {totalAmount} $
           </AppText>
-          <AppText style={{ color: AppColors.secondaryColor }}>{date}</AppText>
         </View>
       </View>
     </View>

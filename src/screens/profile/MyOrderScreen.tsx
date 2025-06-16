@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AppSaveView from "../../components/views/AppSaveView";
 import OrderItemCard from "../../components/Cards/OrderItemCard";
 import { sharedPaddingHorizontal } from "../../styles/SharedStyles";
 import { FlatList } from "react-native-gesture-handler";
+import { fetchUserOrders } from "../../config/dataServices";
+import { getDateFromFireStoreTimeStampObject } from "../../helpers/dateTimeHelper";
 
 const orderData = [
   {
@@ -27,13 +29,32 @@ const orderData = [
 ];
 
 const MyOrderScreen = () => {
+  const [orderList, setOrderList] = useState([]);
+  const getOrders = async () => {
+    const response = await fetchUserOrders();
+    setOrderList(response);
+  };
+
+  useEffect(() => {
+    getOrders();
+  }, []);
   return (
     <AppSaveView style={{ paddingHorizontal: sharedPaddingHorizontal }}>
       <FlatList
-        data={orderData}
-        keyExtractor={(item) => item.id.toString()}
+        data={orderList}
+        keyExtractor={(item, index) => item?.id.toString()}
         renderItem={({ item }) => {
-          return <OrderItemCard {...item} />;
+          console.log("================ITEM====================");
+          console.log(JSON.stringify(item, null, 3));
+          console.log("====================================");
+
+          return (
+            <OrderItemCard
+              date={getDateFromFireStoreTimeStampObject(item.createdAt)}
+              totalAmount={item.totalProductsPricesSum}
+              totalPrice={item.orderTotal}
+            />
+          );
         }}
         showsVerticalScrollIndicator={false}
       />
