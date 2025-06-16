@@ -1,4 +1,4 @@
-import { StyleSheet, Image } from "react-native";
+import { StyleSheet, Image, Alert } from "react-native";
 import React from "react";
 import AppSaveView from "../../components/views/AppSaveView";
 import { sharedPaddingHorizontal } from "../../styles/SharedStyles";
@@ -8,11 +8,13 @@ import AppText from "../../components/text/AppText";
 import AppButton from "../../components/buttons/AppButton";
 import { AppColors } from "../../styles/colors";
 import { useNavigation } from "@react-navigation/native";
-import { supabase } from "../../config/supabase";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import AppTextInputController from "../../components/inputs/AppTextInputController";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../config/firebase";
+import { showMessage } from "react-native-flash-message";
 
 const schema = yup
   .object({
@@ -31,6 +33,8 @@ const schema = yup
   })
   .required();
 
+type FormData = yup.InferType<typeof schema>;
+
 const SignUpScreen = () => {
   const navigation = useNavigation();
 
@@ -42,24 +46,32 @@ const SignUpScreen = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = async (data: {
-    userName: any;
-    email: any;
-    password: any;
-  }) => {
-    const { userName, email, password } = data;
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { username: userName },
-      },
-    });
-    if (error) {
-      alert("Sign up failed: " + error.message);
-    } else {
-      alert("Sign up successful! Please check your email.");
+  const onSubmit = async (data: FormData) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+
+      Alert.alert("User Created!");
       navigation.navigate("SignInScreen");
+      return userCredential.user;
+    } catch (error: any) {
+      let errorMessage = "";
+      if (error.code === "auth/email-already-in-use") {
+        errorMessage = "This email is already in use";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "The email address is invalid";
+      } else if (error.code === "auth/weak-password") {
+        errorMessage = "The password is too weak";
+      } else {
+        errorMessage = "An error occurred during sign-up";
+      }
+      showMessage({
+        type: "danger",
+        message: errorMessage,
+      });
     }
   };
 

@@ -20,6 +20,7 @@
     "expo-font": "^13.3.1",
     "expo-secure-store": "^14.2.3",
     "expo-status-bar": "~2.2.3",
+    "firebase": "^11.9.1",
     "jwt-decode": "^4.0.0",
     "react": "19.0.0",
     "react-hook-form": "^7.57.0",

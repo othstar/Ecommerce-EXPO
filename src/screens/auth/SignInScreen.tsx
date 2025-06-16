@@ -13,7 +13,9 @@ import AppText from "../../components/text/AppText";
 import AppButton from "../../components/buttons/AppButton";
 import { AppColors } from "../../styles/colors";
 import { useNavigation } from "@react-navigation/native";
-import { supabase } from "../../config/supabase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../config/firebase";
+import { showMessage } from "react-native-flash-message";
 
 const schema = yup
   .object({
@@ -28,6 +30,8 @@ const schema = yup
   })
   .required();
 
+type FormData = yup.InferType<typeof schema>;
+
 const SignInScreen = () => {
   const navigation = useNavigation();
 
@@ -39,17 +43,29 @@ const SignInScreen = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = async (data: { email: any; password: any }) => {
-    const { email, password } = data;
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      alert("Login failed: " + error.message);
-    } else {
+  const onSubmit = async (data: FormData) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
       navigation.navigate("BottomTabs");
+      console.log(userCredential);
+    } catch (error: any) {
+      let errorMessage = "";
+
+      if (error.code === "auth/user-not-found") {
+        errorMessage = "User not found";
+      } else if (error.code === "auth/invalid-credential") {
+        errorMessage = "Wrong Email or Password";
+      } else {
+        errorMessage = "An error occured during sign-in";
+      }
+      showMessage({
+        type: "danger",
+        message: errorMessage,
+      });
     }
   };
 
