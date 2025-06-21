@@ -7,6 +7,7 @@ import {
 import { s, vs } from "react-native-size-matters";
 import { AppColors } from "../../styles/colors";
 import AppText from "../text/AppText";
+import { useTranslation } from "react-i18next";
 
 interface OrderItemCardProps {
   totalAmount: number;
@@ -19,19 +20,24 @@ const OrderItemCard: FC<OrderItemCardProps> = ({
   date,
   totalPrice,
 }) => {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <View style={styles.orderContainer}>
-        <AppText style={styles.orderTitle}>ORDER DETAILS:</AppText>
+        <AppText style={styles.orderTitle}>{t("order_details_title")}</AppText>
       </View>
       <View style={styles.rowContent}>
         <View>
-          <AppText>Total Price: {totalPrice} $</AppText>
-          <AppText>Date: {date}</AppText>
+          <AppText>
+            {t("order_total_price")} {totalPrice} {t("totals_currency")}
+          </AppText>
+          <AppText>
+            {t("order_date")} {date}
+          </AppText>
         </View>
         <View style={{ alignItems: "flex-end" }}>
           <AppText style={{ color: AppColors.secondaryColor }}>
-            {totalAmount} $
+            {totalAmount} {t("totals_currency")}
           </AppText>
         </View>
       </View>

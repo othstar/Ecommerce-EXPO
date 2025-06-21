@@ -17,11 +17,13 @@ import {
 } from "../../store/reducers/cartSlice";
 import { shippingFees, taxes } from "../../constants/constants";
 import EmptyCart from "./EmptyCart";
+import { useTranslation } from "react-i18next";
 
 const CartScreen = () => {
   const navigation = useNavigation();
   const { items } = useSelector((state: RootState) => state.cartSlice);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const totalProductsPricesSum = items.reduce((acc, item) => acc + item.sum, 0);
   const orderTotal = totalProductsPricesSum + taxes + shippingFees;
 
@@ -53,8 +55,8 @@ const CartScreen = () => {
             orderTotal={orderTotal}
           />
           <AppButton
-            onPress={() => navigation.navigate("CheckoutScreen")}
-            title="Continue"
+            onPress={() => navigation.navigate(t("cart_checkout_screen"))}
+            title={t("cart_continue_button")}
           />
         </View>
       ) : (

@@ -18,26 +18,27 @@ import { auth } from "../../config/firebase";
 import { showMessage } from "react-native-flash-message";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../store/reducers/userSlice";
-
-const schema = yup
-  .object({
-    email: yup
-      .string()
-      .email("Please enter a valid email")
-      .required("Email is required"),
-    password: yup
-      .string()
-      .required("Password is required")
-      .min(6, "Password must be at least 6 characters"),
-  })
-  .required();
-
-type FormData = yup.InferType<typeof schema>;
+import { useTranslation } from "react-i18next";
 
 const SignInScreen = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
-
   const dispatch = useDispatch();
+
+  const schema = yup
+    .object({
+      email: yup
+        .string()
+        .email(t("sign_in_email_invalid"))
+        .required(t("sign_in_email_required")),
+      password: yup
+        .string()
+        .required(t("sign_in_password_required"))
+        .min(6, t("sign_in_password_min_length")),
+    })
+    .required();
+
+  type FormData = yup.InferType<typeof schema>;
 
   const {
     control,
@@ -65,11 +66,11 @@ const SignInScreen = () => {
       let errorMessage = "";
 
       if (error.code === "auth/user-not-found") {
-        errorMessage = "User not found";
+        errorMessage = t("sign_in_error_user_not_found");
       } else if (error.code === "auth/invalid-credential") {
-        errorMessage = "Wrong Email or Password";
+        errorMessage = t("sign_in_error_invalid_credential");
       } else {
-        errorMessage = "An error occured during sign-in";
+        errorMessage = t("sign_in_error_default");
       }
       showMessage({
         type: "danger",
@@ -85,22 +86,25 @@ const SignInScreen = () => {
       <AppTextInputController
         control={control}
         name={"email"}
-        placeholder={"Email"}
+        placeholder={t("sign_in_email_placeholder")}
       />
 
       <AppTextInputController
         control={control}
         name={"password"}
-        placeholder={"Password"}
+        placeholder={t("sign_in_password_placeholder")}
         secureTextEntry
       />
 
       <AppText style={styles.appName}>Smart E-Commerce</AppText>
 
-      <AppButton title={"Login"} onPress={handleSubmit(onSubmit)} />
+      <AppButton
+        title={t("sign_in_login_button")}
+        onPress={handleSubmit(onSubmit)}
+      />
 
       <AppButton
-        title={"Sign Up"}
+        title={t("sign_in_signup_button")}
         style={styles.registerButton}
         textColor={AppColors.primary}
         onPress={() => navigation.navigate("SignUpScreen")}

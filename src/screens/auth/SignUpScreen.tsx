@@ -17,29 +17,30 @@ import { auth } from "../../config/firebase";
 import { showMessage } from "react-native-flash-message";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../store/reducers/userSlice";
-
-const schema = yup
-  .object({
-    userName: yup
-      .string()
-      .required("Username is required")
-      .min(3, "Name must be at least 3 characters"),
-    email: yup
-      .string()
-      .email("Please enter a valid email")
-      .required("Email is required"),
-    password: yup
-      .string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
-  })
-  .required();
-
-type FormData = yup.InferType<typeof schema>;
+import { useTranslation } from "react-i18next";
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const schema = yup
+    .object({
+      userName: yup
+        .string()
+        .required(t("sign_up_username_required"))
+        .min(3, t("sign_up_username_min_length")),
+      email: yup
+        .string()
+        .email(t("sign_up_email_invalid"))
+        .required(t("sign_up_email_required")),
+      password: yup
+        .string()
+        .min(6, t("sign_up_password_min_length"))
+        .required(t("sign_up_password_required")),
+    })
+    .required();
+
+  type FormData = yup.InferType<typeof schema>;
 
   const {
     control,
@@ -88,29 +89,29 @@ const SignUpScreen = () => {
       <AppTextInputController
         control={control}
         name={"userName"}
-        placeholder="User Name"
+        placeholder={t("sign_up_username_placeholder")}
       />
 
       <AppTextInputController
         control={control}
         name={"email"}
-        placeholder="Email"
+        placeholder={t("sign_up_email_placeholder")}
       />
 
       <AppTextInputController
         control={control}
         name={"password"}
-        placeholder="Password"
+        placeholder={t("sign_up_password_placeholder")}
         secureTextEntry={true}
       />
 
       <AppText style={styles.appName}>Smart E-Commerce</AppText>
       <AppButton
-        title={"Create New Account"}
+        title={t("sign_up_create_account_button")}
         onPress={handleSubmit(onSubmit)}
       />
       <AppButton
-        title={"Go To Signin"}
+        title={t("sign_up_goto_signin_button")}
         style={styles.signinButton}
         textColor={AppColors.primary}
         onPress={() => navigation.navigate("SignInScreen")}
