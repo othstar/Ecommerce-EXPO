@@ -9,8 +9,9 @@ import { useNavigation } from "@react-navigation/native";
 import { SheetManager } from "react-native-actions-sheet";
 import LanguageBottomSheet from "../../components/language/LanguageBottomSheet";
 import { useTranslation } from "react-i18next";
-import AppText from "../../components/text/AppText";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { signOut } from "firebase/auth";
+import { auth } from "../../config/firebase";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -18,6 +19,7 @@ const ProfileScreen = () => {
   const handleLogout = async () => {
     await AsyncStorage.removeItem("USER_DATA");
     navigation.navigate("AuthStack");
+    await signOut(auth);
   };
   return (
     <AppSaveView>

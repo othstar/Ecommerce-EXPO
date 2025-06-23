@@ -9,6 +9,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setUserData } from "../store/reducers/userSlice";
 import { useEffect } from "react";
 import { RootState } from "../store/store";
+import { ActivityIndicator, View } from "react-native";
+import { AppColors } from "../styles/colors";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../config/firebase";
 
 const Stack = createStackNavigator();
 
@@ -39,8 +43,22 @@ export default function MainAppStack() {
     isUserLoggedIn();
   }, []);
 
+  useEffect(() => {
+    onAuthStateChanged(auth, (userData) => {
+      if (userData) {
+        console.log("User is signed in");
+      } else {
+        console.log("User is signed out");
+      }
+    });
+  }, []);
+
   if (isLoading) {
-    return null;
+    return (
+      <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
+        <ActivityIndicator size={"large"} color={AppColors.primary} />
+      </View>
+    );
   }
   return (
     <Stack.Navigator
