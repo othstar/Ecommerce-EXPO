@@ -34,7 +34,7 @@ const LANGUAGES = {
 
 i18n.use(initReactI18next).init({
   resources: LANGUAGES,
-  fallbackLng: "ka",
+  fallbackLng: "en",
   defaultNS: "translation",
   ns: ["translation"],
   react: {

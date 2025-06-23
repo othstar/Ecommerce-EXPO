@@ -56,7 +56,7 @@ const SignInScreen = () => {
         data.password
       );
       navigation.navigate("BottomTabs");
-      console.log(JSON.stringify(userCredential, null, 3));
+      // console.log(JSON.stringify(userCredential, null, 3));
 
       const uerDataObj = {
         uid: userCredential.user.uid,

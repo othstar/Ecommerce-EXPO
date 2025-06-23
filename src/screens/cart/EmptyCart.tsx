@@ -23,7 +23,7 @@ const EmptyCart = () => {
       <AppText style={styles.title}>{t("empty_cart_title")}</AppText>
       <AppText style={styles.subTitle}>{t("empty_cart_subtitle")}</AppText>
       <AppButton
-        onPress={() => navigation.navigate("Home")}
+        onPress={() => navigation.navigate(t("tab_home"))}
         title={t("start_shopping")}
         style={styles.button}
       />
