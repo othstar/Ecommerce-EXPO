@@ -3,7 +3,6 @@ import userSlice from "./reducers/userSlice";
 import { persistedCartSlice } from "./persisted/PersistConfig";
 import {
   persistStore,
-  persistReducer,
   FLUSH,
   REHYDRATE,
   PAUSE,
